@@ -121,12 +121,250 @@ function wahlKnoepfe(optionen) {
   return { element: el("div", { class: "art", role: "group" }, ...knoepfe), wert: () => gewaehlt, setzen };
 }
 
-/* Auswahlliste (natives Auswahlfenster). optionen wie bei wahlKnoepfe. */
-function wahlListe(optionen, name) {
-  const liste = el("select", { class: "wahl-liste", "aria-label": name },
-    el("option", { value: "" }, "?"),
-    ...optionen.map((o) => el("option", { value: o.wert }, o.text)));
-  return { element: liste, wert: () => liste.value || null, setzen(wert) { liste.value = wert; } };
+function gemischt(g, z, n) {
+  return el("span", { class: "gemischt" }, String(g), bruch(z, n));
+}
+
+/* Eingabefeld für eine gemischte Zahl. fest: vorgegebene Werte wie bei bruchEingabe, dazu g.
+   Bleibt der Bruch leer, gilt er als 0. lesen() liefert {g, z, n} oder null. */
+function gemischtEingabe(fest = {}) {
+  const ganze = fest.g === undefined ? zahlFeld("Ganze") : el("span", { class: "fest" }, String(fest.g));
+  const b = bruchEingabe(fest);
+  const zahl = (t) => (/^\d+$/.test(t) ? Number(t) : null);
+  return {
+    element: el("div", { class: "gemischt-eingabe" }, ganze, b.element),
+    lesen() {
+      const g = fest.g === undefined ? (ganze.value.trim() === "" ? 0 : zahl(ganze.value.trim())) : fest.g;
+      const felder = [...b.element.querySelectorAll("input")];
+      const leer = felder.length === 2 && felder.every((f) => f.value.trim() === "");
+      if (g === null || (leer && g === 0)) return null;
+      const e = leer ? { z: 0, n: 1 } : b.lesen();
+      return e && { g, ...e };
+    },
+    setzen(g, z, n) {
+      if (fest.g === undefined) ganze.value = g;
+      b.setzen(z, n);
+    }
+  };
+}
+
+/* Karten in einer Reihe, die man an die richtige Stelle zieht.
+   Ohne Ziehen: zwei Karten nacheinander antippen, dann tauschen sie die Plätze.
+   folge() liefert die Nummern der Karten von links nach rechts. */
+function ziehKarten(inhalte) {
+  const karten = inhalte.map((inhalt) => el("button", { type: "button", "aria-pressed": "false" }, inhalt));
+  const reihe = el("div", { class: "zieh-reihe" }, ...karten);
+  let ordnung = [...karten];
+  let gewaehlt = null;   // angetippte Karte
+  let zug = null;        // laufendes Ziehen
+  let gezogen = false;   // unterscheidet Ziehen und Antippen
+
+  function anordnen(neu) {
+    ordnung = neu;
+    reihe.append(...ordnung);
+  }
+  function waehlen(karte) {
+    gewaehlt = karte;
+    karten.forEach((k) => k.setAttribute("aria-pressed", String(k === karte)));
+  }
+  function antippen(karte) {
+    if (gewaehlt === null) return waehlen(karte);
+    if (gewaehlt !== karte) {
+      const neu = [...ordnung];
+      const a = neu.indexOf(gewaehlt), b = neu.indexOf(karte);
+      [neu[a], neu[b]] = [neu[b], neu[a]];
+      anordnen(neu);
+      karte.focus({ preventScroll: true });
+    }
+    waehlen(null);
+  }
+  function verschoben(von, nach) {
+    const neu = [...ordnung];
+    neu.splice(nach, 0, neu.splice(von, 1)[0]);
+    return neu;
+  }
+  function beenden(uebernehmen) {
+    if (!zug) return;
+    const { karte, von, nach } = zug;
+    zug = null;
+    karte.classList.remove("gezogen");
+    reihe.classList.remove("zieht");
+    karten.forEach((k) => { k.style.transform = ""; });
+    if (uebernehmen && von !== nach) anordnen(verschoben(von, nach));
+  }
+
+  karten.forEach((karte) => {
+    karte.addEventListener("pointerdown", (ev) => {
+      if (zug || ev.button !== 0) return;
+      gezogen = false;
+      const links = ordnung.map((k) => k.getBoundingClientRect().left);
+      const von = ordnung.indexOf(karte);
+      zug = { karte, id: ev.pointerId, x: ev.clientX, von, nach: von, schritt: links[1] - links[0] };
+      try { karte.setPointerCapture(ev.pointerId); } catch (e) { /* Ziehen geht auch ohne */ }
+    });
+    karte.addEventListener("pointermove", (ev) => {
+      if (!zug || zug.id !== ev.pointerId) return;
+      const dx = ev.clientX - zug.x;
+      if (!gezogen && Math.abs(dx) < 8) return;
+      if (!gezogen) {
+        gezogen = true;
+        waehlen(null);
+        karte.classList.add("gezogen");
+        reihe.classList.add("zieht");
+      }
+      const letzter = ordnung.length - 1;
+      const weg = Math.max(-zug.von * zug.schritt, Math.min((letzter - zug.von) * zug.schritt, dx));
+      zug.nach = zug.von + Math.round(weg / zug.schritt);
+      karte.style.transform = `translateX(${weg}px)`;
+      ordnung.forEach((k, i) => {
+        if (k === karte) return;
+        let d = 0;
+        if (i > zug.von && i <= zug.nach) d = -zug.schritt;
+        if (i < zug.von && i >= zug.nach) d = zug.schritt;
+        k.style.transform = d ? `translateX(${d}px)` : "";
+      });
+    });
+    karte.addEventListener("pointerup", (ev) => {
+      if (!zug || zug.id !== ev.pointerId) return;
+      beenden(true);
+      if (!gezogen) antippen(karte);
+    });
+    karte.addEventListener("pointercancel", (ev) => { if (zug && zug.id === ev.pointerId) beenden(false); });
+    // Nur für die Tastatur (detail ist dann 0). Finger und Maus erledigt pointerup.
+    karte.addEventListener("click", (ev) => { if (ev.detail === 0) antippen(karte); });
+  });
+  // Pfeil unter den Karten, die Wörter "kleinste" und "größte" stehen im CSS
+  const pfeil = svg("svg", { viewBox: "0 0 100 16", preserveAspectRatio: "none", "aria-hidden": "true" },
+    svg("path", { d: "M0 8 H99 M96 3 L99 8 L96 13", fill: "none", stroke: "currentColor", "stroke-width": 2, "vector-effect": "non-scaling-stroke" }));
+  return {
+    element: el("div", {}, reihe, el("div", { class: "zieh-richtung" }, pfeil)),
+    folge: () => ordnung.map((k) => karten.indexOf(k)),
+    setzen(nummern) { waehlen(null); anordnen(nummern.map((i) => karten[i])); }
+  };
+}
+
+/* Walze zum Drehen. optionen wie bei wahlKnoepfe. Zu Beginn steht "?" in der Mitte.
+   Wischen oder Ziehen dreht, Antippen dreht um eins weiter (im oberen Teil zurück),
+   Pfeiltasten gehen auch. wert() liefert null, solange nichts gewählt ist. */
+function walze(optionen, name) {
+  const HOEHE = 52, RAND = 30;          // Höhe eines Zeichens, sichtbarer Rand der Nachbarn
+  const anzahl = optionen.length;
+  const band = el("div", { class: "walze-band", "aria-hidden": "true" });
+  const zellen = [-2, -1, 0, 1, 2].map(() => el("span"));
+  band.append(...zellen);
+  const element = el("div", { class: "walze", role: "spinbutton", tabindex: "0", "aria-label": name }, band);
+
+  let offen = true;                     // noch nichts gewählt
+  let versatz = 1;
+  let lage = 0, ziel = 0;               // gezeigte und angestrebte Stelle, endlos in beide Richtungen
+  let zug = null, laeuft = false;
+
+  const option = (k, v) => optionen[(((k - v) % anzahl) + anzahl) % anzahl];
+  function zeichen(k) {
+    if (!offen) return option(k, versatz);
+    return k === 0 ? null : option(k, k > 0 ? 1 : 0);
+  }
+  function malen() {
+    const mitte = Math.round(lage);
+    zellen.forEach((zelle, i) => {
+      const o = zeichen(mitte - 2 + i);
+      zelle.textContent = o ? o.text : "?";
+    });
+    band.style.transform = `translateY(${RAND - 2 * HOEHE - (lage - mitte) * HOEHE}px)`;
+  }
+  function bild() {
+    if (zug) { laeuft = false; return; }
+    lage += (ziel - lage) * 0.28;
+    if (Math.abs(ziel - lage) < 0.01) lage = ziel;
+    malen();
+    if (lage === ziel) laeuft = false; else requestAnimationFrame(bild);
+  }
+  function drehen(neu) {
+    if (offen && neu !== 0) { versatz = neu > 0 ? 1 : 0; offen = false; }
+    ziel = neu;
+    const o = zeichen(ziel);
+    element.setAttribute("aria-valuetext", o ? o.name || o.text : "noch nichts gewählt");
+    if (o) element.setAttribute("aria-valuenow", String(optionen.indexOf(o) + 1));
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { lage = ziel; malen(); return; }
+    if (!laeuft) { laeuft = true; requestAnimationFrame(bild); }
+  }
+  const gesperrt = () => { const f = element.closest("fieldset"); return f && f.disabled; };
+
+  element.addEventListener("pointerdown", (ev) => {
+    if (zug || ev.button !== 0 || gesperrt()) return;
+    zug = { id: ev.pointerId, y: ev.clientY, start: lage, bewegt: false };
+    try { element.setPointerCapture(ev.pointerId); } catch (e) { /* geht auch ohne */ }
+  });
+  element.addEventListener("pointermove", (ev) => {
+    if (!zug || zug.id !== ev.pointerId) return;
+    const dy = ev.clientY - zug.y;
+    if (!zug.bewegt && Math.abs(dy) < 6) return;
+    zug.bewegt = true;
+    lage = zug.start - dy / HOEHE;
+    malen();
+  });
+  function loslassen(ev, abbruch) {
+    if (!zug || zug.id !== ev.pointerId) return;
+    const { bewegt, start } = zug;
+    zug = null;
+    laeuft = false;
+    if (abbruch) drehen(ziel);
+    else if (bewegt) drehen(Math.round(lage + Math.sign(lage - start) * 0.2));   // kurzes Wischen genügt
+    else {
+      const oben = ev.clientY - element.getBoundingClientRect().top < RAND;
+      drehen(ziel + (oben ? -1 : 1));
+    }
+  }
+  element.addEventListener("pointerup", (ev) => loslassen(ev, false));
+  element.addEventListener("pointercancel", (ev) => loslassen(ev, true));
+  element.addEventListener("keydown", (ev) => {
+    const schritt = { ArrowDown: 1, ArrowUp: -1, " ": 1 }[ev.key];
+    if (!schritt || gesperrt()) return;
+    ev.preventDefault();
+    drehen(ziel + schritt);
+  });
+
+  malen();
+  element.setAttribute("aria-valuetext", "noch nichts gewählt");
+  return {
+    element,
+    wert() { const o = zeichen(ziel); return o ? o.wert : null; },
+    setzen(wert) {
+      offen = false;
+      for (const k of [ziel, ziel + 1, ziel - 1]) if (zeichen(k).wert === wert) { drehen(k); return; }
+    }
+  };
+}
+
+const ZEICHEN = [
+  { wert: "<", text: "<", name: "kleiner als" },
+  { wert: "=", text: "=", name: "gleich" },
+  { wert: ">", text: ">", name: "größer als" }
+];
+
+/* Fertige Aufgabe: zwei Zahlen mit der Walze vergleichen.
+   Damit sich Raten nicht lohnt, zählt nur der erste Versuch.
+   links und rechts: Funktionen, die die Anzeige der Zahl liefern
+   tipp und begruendung: Text oder Liste aus Texten und Elementen */
+function vergleichsAufgabe({ schluessel, frage, links, rechts, loesung, tipp, begruendung }) {
+  const feld = walze(ZEICHEN, "Zeichen zwischen den Zahlen");
+  return {
+    schluessel,
+    nurErsterVersuch: true,
+    inhalt: [
+      el("p", {}, frage, " Für die nächste Stufe zählt nur der erste Versuch."),
+      el("div", { class: "vergleich-gross" }, links(), feld.element, rechts())
+    ],
+    pruefe() {
+      if (feld.wert() === null) return { art: "offen", text: "Drehe die Walze auf ein Zeichen." };
+      if (feld.wert() !== loesung) return { art: "falsch", text: tipp };
+      return { art: "richtig", text: ["Richtig! ", links(), ` ${loesung} `, rechts()] };
+    },
+    loese() {
+      feld.setzen(loesung);
+      return [].concat(begruendung, " Also: ", links(), ` ${loesung} `, rechts());
+    }
+  };
 }
 
 /* Auswahlkarten zum Antippen. karten: [{ inhalt: [...], richtig: true/false }]
@@ -218,6 +456,15 @@ function faerben(fig, anzahl, zufaellig) {
   return fig;
 }
 
+// Mehrere gleiche Figuren nebeneinander, z. B. mehrere Ganze für unechte Brüche
+function mehrere(anzahl, zeichne) {
+  const teile = Array.from({ length: anzahl }, zeichne);
+  return {
+    bild: el("div", { class: "ganze" }, ...teile.map((t) => t.bild)),
+    felder: teile.flatMap((t) => t.felder)
+  };
+}
+
 // Macht aus einer Figur antippbare Felder.
 function antippbar(fig) {
   fig.felder.forEach((f, i) => {
@@ -238,11 +485,57 @@ function antippbar(fig) {
   return fig;
 }
 
+/* Zahlenstrahl von 0 bis max, jede Einheit in n Abschnitte geteilt.
+   Stellen werden in Abschnitten ab 0 gezählt.
+   pfeile: [{ stelle, text }]   antippbar: Ein Strich kann gewählt werden.
+   wert() liefert die gewählte Stelle oder null. */
+function zahlenstrahl({ max, n, pfeile = [], antippbar = false }) {
+  const anzahl = max * n, schritt = 620 / anzahl;
+  const x = (i) => 30 + i * schritt;
+  const pfeil = (i, text, klasse) => svg("g", { class: "pfeil " + klasse },
+    svg("path", { d: `M${x(i)} 24 V54 M${x(i) - 6} 45 L${x(i)} 56 L${x(i) + 6} 45` }),
+    svg("text", { x: x(i), y: 18 }, text));
+  const bild = svg("svg", { viewBox: "0 0 700 115", role: antippbar ? "radiogroup" : "img",
+    "aria-label": `Zahlenstrahl von 0 bis ${max}, jede Einheit in ${n} Abschnitte geteilt` });
+  bild.append(svg("path", { class: "achse", d: "M20 70 H686 M676 64 L688 70 L676 76" }));
+  for (let i = 0; i <= anzahl; i++) {
+    const ganz = i % n === 0;
+    bild.append(svg("path", { class: ganz ? "strich-ganz" : "strich-teil", d: `M${x(i)} ${ganz ? 56 : 61} V${ganz ? 84 : 79}` }));
+    if (ganz) bild.append(svg("text", { x: x(i), y: 108 }, String(i / n)));
+  }
+  pfeile.forEach((p) => bild.append(pfeil(p.stelle, p.text || "", "")));
+
+  let gewaehlt = null, marke = null;
+  const flaechen = [];
+  function setzen(i) {
+    gewaehlt = i;
+    if (marke) marke.remove();
+    marke = pfeil(i, "", "gewaehlt");
+    bild.insertBefore(marke, flaechen[0]);
+    flaechen.forEach((f, k) => f.setAttribute("aria-checked", String(k === i)));
+  }
+  if (antippbar) {
+    for (let i = 0; i <= anzahl; i++) {
+      const f = svg("rect", { class: "treffer", x: x(i) - schritt / 2, y: 5, width: schritt, height: 105,
+        role: "radio", tabindex: "0", "aria-checked": "false", "aria-label": `Strich ${i} nach 0` });
+      const tippen = () => { if (!f.closest("fieldset").disabled) setzen(i); };
+      f.addEventListener("click", tippen);
+      f.addEventListener("keydown", (ev) => {
+        if (ev.key === " " || ev.key === "Enter") { ev.preventDefault(); tippen(); }
+      });
+      flaechen.push(f);
+      bild.append(f);
+    }
+  }
+  return { bild: el("div", { class: "strahl" }, bild), wert: () => gewaehlt, setzen };
+}
+
 /* ---------- Übung ----------
  * erzeuge(stufe) liefert eine Aufgabe:
  *   { schluessel: (freiwillig) gleicher Schlüssel = gleiche Aufgabe, kommt nicht direkt nacheinander
  *     inhalt: [Elemente oder Texte],
  *     pruefe():  { art: "richtig" | "falsch" | "offen", text },
+ *     nurErsterVersuch: (freiwillig) true, wenn nur der erste Versuch als gelöst zählt
  *     loese():   trägt die Lösung ein und liefert einen Text }
  * text ist ein Text oder eine Liste aus Texten und Elementen.
  * Bei "falsch" zählt die Antwort als Fehlversuch, bei "offen" nur mit zaehlt: true.
@@ -309,8 +602,10 @@ function uebung(id, erzeuge, aufstieg = []) {
     if (inhalt.disabled) return;
     const e = aufgabe.pruefe();
     const vorher = stufe();
-    if (e.art === "richtig") { geloest++; punkte++; }
+    const zaehlt = !(aufgabe.nurErsterVersuch && versuche > 0);
+    if (e.art === "richtig" && zaehlt) { geloest++; punkte++; }
     const text = [].concat(e.text);
+    if (e.art === "richtig" && !zaehlt) text.push(" Gezählt wird hier nur der erste Versuch.");
     if (stufe() > vorher) text.push(` Weiter mit Stufe ${stufe()}: Ab jetzt wird es etwas schwieriger.`);
     melden(e.art, text);
     if (e.art === "richtig") {

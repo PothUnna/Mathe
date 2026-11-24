@@ -34,6 +34,21 @@ const STRUKTUR = {
               ordner: "brueche-vergleichen",
               titel: "Brüche vergleichen",
               text: "Erklärung, Beispiele und Übungen"
+            },
+            {
+              ordner: "prozente",
+              titel: "Anteile in Prozent",
+              text: "Erklärung, Beispiele und Übungen"
+            },
+            {
+              ordner: "gemischte-zahlen",
+              titel: "Unechte Brüche und gemischte Zahlen",
+              text: "Erklärung, Beispiele und Übungen"
+            },
+            {
+              ordner: "zahlenstrahl",
+              titel: "Brüche auf dem Zahlenstrahl",
+              text: "Erklärung, Beispiele und Übungen"
             }
           ]
         }

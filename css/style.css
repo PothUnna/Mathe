@@ -106,8 +106,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
 }
 input:disabled { opacity: 1; background: var(--grund); }
-.auswahl { display: grid; gap: .75rem; grid-template-columns: repeat(2, 1fr); margin-bottom: 1rem; }
-@media (min-width: 40rem) { .auswahl { grid-template-columns: repeat(3, 1fr); } }
+.auswahl { display: grid; gap: .75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem; }
+@media (min-width: 40rem) { .auswahl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .auswahl button {
   position: relative; height: 9.5rem; padding: .75rem; background: #fff; cursor: pointer;
   border: 2px solid var(--linie); border-radius: 12px; touch-action: manipulation;
@@ -140,22 +140,30 @@ input:disabled { opacity: 1; background: var(--grund); }
 .bild-vergleich > .figur:first-child { grid-column: 1; }
 .bild-vergleich > .figur + .figur { grid-column: 3; }
 .bild-vergleich .figur { max-width: 20rem; margin-block: .5rem; }
-.bild-vergleich .wahl-liste { margin-bottom: 1rem; }
-/* Schrift mindestens 16px, sonst zoomt Safari auf dem iPad beim Antippen */
-.wahl-liste {
-  -webkit-appearance: none; appearance: none;
-  width: 4rem; height: 56px; padding: 0; border-radius: 8px;
-  border: 2px solid var(--akzent); background: #fff; color: var(--akzent);
-  font: inherit; font-size: 1.5rem; font-weight: 600;
-  text-align: center; text-align-last: center; touch-action: manipulation;
+.bild-vergleich .walze { margin-bottom: 1rem; }
+.vergleich-gross { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-block: .5rem 1.25rem; }
+.vergleich-gross > .bruch { font-size: 2rem; min-width: 4rem; align-items: center; }
+
+.vergleich-gross > .prozent, .vergleich-gross > .zahl { font-size: 2rem; min-width: 5rem; text-align: center; white-space: nowrap; }
+/* Walze zum Drehen (Maße passend zu walze() in script.js) */
+.walze {
+  position: relative; width: 4.25rem; height: 112px; overflow: hidden; border-radius: 10px;
+  border: 2px solid var(--akzent); box-sizing: content-box;
+  background: linear-gradient(#cfd8e0, #fff 32%, #fff 68%, #cfd8e0);
+  cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
 }
-.wahl-liste:focus-visible { outline: 3px solid var(--akzent); outline-offset: 2px; }
-.wahl-liste:disabled { opacity: 1; background: var(--grund); }
-.auswahl button[data-platz] { border-color: var(--akzent); background: var(--akzent-hell); }
-.auswahl button[data-platz]::after {
-  content: attr(data-platz); position: absolute; top: 6px; right: 6px; width: 30px; height: 30px;
-  border-radius: 50%; background: var(--akzent); color: #fff; font: 600 17px/30px system-ui, sans-serif;
-}
+.walze:active { cursor: grabbing; }
+.walze:focus-visible { outline: 3px solid var(--akzent); outline-offset: 2px; }
+.walze-band { will-change: transform; }
+.walze-band span { display: block; height: 52px; line-height: 52px; text-align: center; font-size: 1.9rem; font-weight: 600; color: var(--akzent); }
+/* Ränder abblenden, Mitte hervorheben */
+.walze::before { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none;
+  background: linear-gradient(rgb(255 255 255 / .75) 30px, transparent 30px, transparent 82px, rgb(255 255 255 / .75) 82px); }
+.walze::after { content: ""; position: absolute; z-index: 1; left: 0; right: 0; top: 30px; height: 52px; box-sizing: border-box;
+  pointer-events: none; border-block: 1px solid var(--akzent); }
+fieldset:disabled .walze { cursor: default; }
+
 .bild-bruch { display: flex; flex-direction: column; align-items: center; }
 .bild-bruch > .bruch { font-size: 1.6rem; margin-top: 1.25rem; }
 .stufen { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
@@ -180,6 +188,77 @@ input:disabled { opacity: 1; background: var(--grund); }
 }
 .knopf.haupt { color: #fff; background: var(--akzent); }
 .stand { color: var(--leise); margin-left: auto; }
+
+.hunderter .feld { stroke-width: 1; }
+.tabelle { overflow-x: auto; margin-bottom: 1rem; }
+.tabelle table { border-collapse: collapse; margin-inline: auto; }
+.tabelle th, .tabelle td { border: 1px solid var(--linie); padding: .4rem .8rem; text-align: center; white-space: nowrap; }
+.tabelle th { background: var(--akzent-hell); }
+
+.gemischt { display: inline-flex; align-items: center; vertical-align: middle; font-weight: 600; white-space: nowrap; }
+.gemischt { font-size: 1.15em; }
+.gemischt .bruch { font-size: .87em; }
+.gemischt-eingabe { display: inline-flex; align-items: center; gap: .6rem; font-size: 1rem; }
+.gemischt-eingabe .bruch-eingabe { margin: 0; }
+.gemischt-eingabe > input {
+  width: 4rem; height: 60px; text-align: center; font: inherit; font-size: 1.5rem;
+  color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
+}
+.gemischt-eingabe > .fest { min-width: 2rem; font-size: 1.5rem; }
+.ganze { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .75rem; margin-block: .5rem 1rem; }
+.ganze .figur { width: 12rem; max-width: 30%; margin: 0; }
+@media (max-width: 40rem) { .ganze .figur { max-width: 46%; } }
+.auswahl .ganze { height: 100%; margin: 0; gap: .4rem; flex-wrap: nowrap; }
+.auswahl .ganze .figur { flex: 1 1 0; min-width: 0; max-width: 5.5rem; height: auto; }
+@media (max-width: 40rem) { .auswahl .ganze { flex-direction: column; } .auswahl .ganze .figur { width: 100%; max-width: 6rem; min-height: 0; } }
+.weiterzaehlen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; text-align: center; }
+.weiterzaehlen > div { display: flex; flex-direction: column; justify-content: space-between; }
+.weiterzaehlen .ganze .figur { max-width: 44%; width: 8rem; }
+
+/* Karten zum Ziehen */
+.zieh-reihe { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .75rem; }
+.zieh-reihe button {
+  min-height: 6rem; padding: .25rem; font: inherit; font-size: 1.3rem; color: inherit; background: #fff;
+  border: 2px solid var(--linie); border-radius: 12px; cursor: grab;
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.zieh-reihe.zieht button:not(.gezogen) { transition: transform .15s; }
+.zieh-reihe button.gezogen { position: relative; z-index: 1; cursor: grabbing; border-color: var(--akzent); box-shadow: 0 6px 16px rgb(0 0 0 / .2); }
+.zieh-reihe button[aria-pressed="true"] { border-color: var(--akzent); background: var(--akzent-hell); box-shadow: 0 0 0 2px var(--akzent); }
+fieldset:disabled .zieh-reihe button { cursor: default; }
+.zieh-richtung { display: flex; align-items: center; gap: .75rem; margin: .5rem 0 1rem; color: var(--leise); }
+.zieh-richtung::before { content: "kleinste"; }
+.zieh-richtung::after { content: "größte"; }
+.zieh-richtung svg { flex: 1; min-width: 0; height: 16px; }
+
+/* Zahlenstrahl */
+.strahl { margin-bottom: 1rem; }
+.strahl svg { display: block; width: 100%; overflow: visible; }
+.strahl path { fill: none; stroke: var(--schrift); stroke-width: 2; }
+.strahl .strich-ganz { stroke-width: 3; }
+.strahl text { font: 600 20px system-ui, sans-serif; text-anchor: middle; fill: var(--schrift); }
+.strahl .pfeil path { stroke: var(--akzent); stroke-width: 3; }
+.strahl .pfeil text { fill: var(--akzent); }
+.strahl .pfeil .bruchstrich { stroke-width: 2; }
+@media (max-width: 40rem) {
+  .strahl { padding-block: .5rem; }
+  .strahl text { font-size: 28px; }
+  .strahl path { stroke-width: 3; }
+  .strahl .strich-ganz, .strahl .pfeil path { stroke-width: 5; }
+}
+.strahl .treffer { fill: transparent; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.strahl .treffer:focus-visible { outline: 3px solid var(--akzent); }
+.zwischen { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: 1.2rem; margin-bottom: 1rem; }
+.zwischen input {
+  width: 4rem; height: 52px; text-align: center; font: inherit; font-size: 1.3rem;
+  color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
+}
+
+@media (max-width: 30rem) {
+  .vergleichszeile { gap: .3rem; }
+  .vergleichszeile .art { gap: .25rem; flex-wrap: nowrap; }
+}
 
 /* Fußzeile */
 footer { background: var(--flaeche); border-top: 1px solid var(--linie); padding-bottom: env(safe-area-inset-bottom, 0px); }

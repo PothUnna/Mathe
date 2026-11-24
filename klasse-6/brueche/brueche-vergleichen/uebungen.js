@@ -10,11 +10,6 @@ const zeichenZwischen = (a, b) => {
   const d = a.z * b.n - b.z * a.n;
   return d < 0 ? "<" : d > 0 ? ">" : "=";
 };
-const ZEICHEN = [
-  { wert: "<", text: "<", name: "kleiner als" },
-  { wert: "=", text: "=", name: "gleich" },
-  { wert: ">", text: ">", name: "größer als" }
-];
 const bruchVon = (b) => bruch(b.z, b.n);
 const kurz = (b) => `${b.z}/${b.n}`;
 const zufallsBruch = (n) => ({ z: zufall(1, n - 1), n });
@@ -47,29 +42,37 @@ const NENNERPAARE = [[2, 3], [2, 5], [3, 4], [3, 5], [4, 5], [3, 8], [4, 6], [5,
 const NENNERPAARE_MIT_TEILER = NENNERPAARE.filter(([a, b]) => ggt(a, b) > 1);
 const paarBeliebig = (liste = NENNERPAARE) => mischen(wahl(liste)).map(zufallsBruch);
 
-/* ---------- Mehrere Vergleiche in einer Aufgabe ---------- */
-function zeilenAufgabe(frage, erzeugePaar, tipp) {
-  const paare = [];
-  while (paare.length < 3) {
-    const p = erzeugePaar();
-    if (!paare.some((q) => p.map(kurz).sort().join() === q.map(kurz).sort().join())) paare.push(p);
+/* ---------- Ein Vergleich mit der Walze ---------- */
+function paarVergleich(frage, [a, b], tipp, begruendung) {
+  return vergleichsAufgabe({
+    schluessel: [a, b].map(kurz).sort().join(),
+    frage, tipp, begruendung,
+    links: () => bruchVon(a), rechts: () => bruchVon(b), loesung: zeichenZwischen(a, b)
+  });
+}
+
+// Tipp und Begründung passend zum Paar
+function erklaerung([a, b]) {
+  if (a.n === b.n) {
+    return { tipp: "Beide Nenner sind gleich. Vergleiche die Zähler.",
+      begruendung: [`Die Nenner sind gleich. Der größere Zähler ist ${Math.max(a.z, b.z)}.`] };
   }
-  const felder = paare.map(() => wahlKnoepfe(ZEICHEN));
-  const loesungen = paare.map(([a, b]) => zeichenZwischen(a, b));
+  if (a.z === b.z) {
+    return { tipp: "Beide Zähler sind gleich. Überlege, bei welchem Bruch die Teile größer sind.",
+      begruendung: [`Die Zähler sind gleich. Beim kleineren Nenner ${Math.min(a.n, b.n)} sind die Teile größer.`] };
+  }
+  const nenner = kgv(a.n, b.n);
+  const begruendung = ["Gleichnamig: "];
+  [a, b].forEach((x, i) => {
+    if (i) begruendung.push(" und ");
+    begruendung.push(bruchVon(x));
+    if (x.n !== nenner) begruendung.push(" = ", bruch((x.z * nenner) / x.n, nenner));
+  });
+  begruendung.push(".");
+  const einer = [a, b].find((x) => x.n === nenner) && [a, b].find((x) => x.n !== nenner);
   return {
-    schluessel: paare.flat().map(kurz).join(),
-    inhalt: [absatz(frage), el("div", { class: "zeilen" }, ...paare.map(([a, b], i) =>
-      el("div", { class: "vergleichszeile" }, bruchVon(a), felder[i].element, bruchVon(b))))],
-    pruefe() {
-      if (felder.some((f) => f.wert() === null)) return { art: "offen", text: "Setze in jeder Zeile ein Zeichen ein." };
-      const anzahl = felder.filter((f, i) => f.wert() === loesungen[i]).length;
-      if (anzahl === 3) return { art: "richtig", text: "Richtig!" };
-      return { art: "falsch", text: `${anzahl} von 3 Zeilen ${anzahl === 1 ? "stimmt" : "stimmen"}. ${tipp}` };
-    },
-    loese() {
-      felder.forEach((f, i) => f.setzen(loesungen[i]));
-      return paare.flatMap(([a, b], i) => [i ? " ,  " : "", bruchVon(a), ` ${loesungen[i]} `, bruchVon(b)]);
-    }
+    tipp: einer ? ["Erweitere ", bruchVon(einer), ` auf den Nenner ${nenner}.`] : `Erweitere beide Brüche auf den Nenner ${nenner}.`,
+    begruendung
   };
 }
 
@@ -84,12 +87,12 @@ uebung("bild", (stufe) => {
       : mischen([2, 3, 4, 5, 6]).slice(0, 2).map(zufallsBruch);
   }
   const eingaben = paar.map(() => bruchEingabe());
-  const wahlFeld = wahlListe(ZEICHEN, "Zeichen zwischen den Brüchen");
+  const wahlFeld = walze(ZEICHEN, "Zeichen zwischen den Brüchen");
   const loesung = zeichenZwischen(...paar);
   return {
     schluessel: paar.map(kurz).join(),
     inhalt: [
-      absatz("Gib beide Anteile als Bruch an. Tippe auf das Fragezeichen und wähle das richtige Zeichen."),
+      absatz("Gib beide Anteile als Bruch an. Drehe die Walze auf das richtige Zeichen."),
       el("div", { class: "bild-vergleich" },
         ...paar.map((b) => {
           const fig = faerben(streifen(Array(b.n).fill(1)), b.z, false);
@@ -118,11 +121,11 @@ uebung("bild", (stufe) => {
 
 /* Übung 2: Zeichen einsetzen. Stufe 1: gleicher Zähler oder Nenner.
    Stufe 2: ein Nenner ist Vielfaches des anderen. Stufe 3: beliebig. */
-uebung("zeichen", (stufe) => zeilenAufgabe("Setze die richtigen Zeichen ein.",
-  [() => paarEinfach(2, 10), paarVielfaches, () => paarBeliebig()][stufe - 1],
-  ["Gleicher Nenner: Vergleiche die Zähler. Gleicher Zähler: Bei größerem Nenner sind die Teile kleiner.",
-    "Erweitere den Bruch mit dem kleineren Nenner.",
-    "Erweitere beide Brüche auf denselben Nenner."][stufe - 1]), DREI_STUFEN);
+uebung("zeichen", (stufe) => {
+  const paar = [() => paarEinfach(2, 10), paarVielfaches, () => paarBeliebig()][stufe - 1]();
+  const { tipp, begruendung } = erklaerung(paar);
+  return paarVergleich("Drehe die Walze auf das richtige Zeichen.", paar, tipp, begruendung);
+}, DREI_STUFEN);
 
 /* Übung 3: Gleichnamig machen. Stufe 1: Nenner gegeben. Stufe 2: Nenner selbst finden.
    Stufe 3: kleinster gemeinsamer Nenner. */
@@ -131,7 +134,7 @@ uebung("gleichnamig", (stufe) => {
   const nenner = kgv(paar[0].n, paar[1].n);
   const ziel = paar.map((b) => ({ z: (b.z * nenner) / b.n, n: nenner }));
   const eingaben = paar.map(() => bruchEingabe(stufe === 1 ? { n: nenner } : {}));
-  const feld = wahlKnoepfe(ZEICHEN);
+  const feld = walze(ZEICHEN, "Zeichen zwischen den Brüchen");
   const loesung = zeichenZwischen(...paar);
   const frage = [
     [`Erweitere beide Brüche auf den Nenner ${nenner} und setze das Zeichen ein.`],
@@ -144,7 +147,7 @@ uebung("gleichnamig", (stufe) => {
       absatz(...frage),
       el("div", { class: "zeilen" },
         ...paar.map((b, i) => el("div", { class: "vergleichszeile" }, bruchVon(b), "=", eingaben[i].element)),
-        el("div", { class: "vergleichszeile" }, bruchVon(paar[0]), feld.element, bruchVon(paar[1])))
+        el("div", { class: "vergleich-gross" }, bruchVon(paar[0]), feld.element, bruchVon(paar[1])))
     ],
     pruefe() {
       const e = eingaben.map((x) => x.lesen());
@@ -182,12 +185,18 @@ uebung("haelfte", (stufe) => {
     return { z, n };
   };
   const mitArt = (a) => { let b; do { b = nahe(); } while (art(b) !== a); return b; };
-  return stufe === 1
-    ? zeilenAufgabe("Vergleiche mit einem Halben.", () => [mitArt(wahl(["<", "=", ">"])), { z: 1, n: 2 }],
-      "Überlege: Was ist die Hälfte des Nenners? Vergleiche sie mit dem Zähler.")
-    : zeilenAufgabe("Vergleiche. Überlege, welcher Bruch kleiner und welcher größer als ein Halbes ist.",
-      () => mischen([mitArt("<"), mitArt(">")]),
-      "Vergleiche jeden Zähler mit der Hälfte des Nenners.");
+  // z. B. 3,5 für die Hälfte von 7
+  const haelfte = (n) => String(n / 2).replace(".", ",");
+  const grund = (b) => [`Die Hälfte von ${b.n} ist ${haelfte(b.n)}, also: `, bruchVon(b), ` ${art(b)} `, bruch(1, 2), "."];
+  if (stufe === 1) {
+    const b = mitArt(wahl(["<", "=", ">"]));
+    return paarVergleich("Vergleiche mit einem Halben.", [b, { z: 1, n: 2 }],
+      `Was ist die Hälfte von ${b.n}? Ist der Zähler ${b.z} kleiner, gleich groß oder größer?`, grund(b));
+  }
+  const paar = mischen([mitArt("<"), mitArt(">")]);
+  return paarVergleich("Vergleiche. Überlege, welcher Bruch kleiner und welcher größer als ein Halbes ist.", paar,
+    `Vergleiche jeden Zähler mit der Hälfte seines Nenners. Was ist die Hälfte von ${paar[0].n} und von ${paar[1].n}?`,
+    [...grund(paar[0]), " ", ...grund(paar[1])]);
 }, ZWEI_STUFEN);
 
 /* Übung 5: Ordnen. Stufe 1: gleicher Zähler oder Nenner. Stufe 2: verwandte Nenner. Stufe 3: vier Brüche. */
@@ -210,44 +219,30 @@ function bruecheZumOrdnen(stufe) {
 }
 
 uebung("ordnen", (stufe) => {
-  const brueche = bruecheZumOrdnen(stufe);
+  let brueche = bruecheZumOrdnen(stufe);
   const sortiert = [...brueche].sort((a, b) => a.z * b.n - b.z * a.n);
-  let folge = [];
-  const knoepfe = brueche.map((b) => {
-    const knopf = el("button", { type: "button" }, bruchVon(b));
-    knopf.addEventListener("click", () => {
-      folge = folge.includes(b) ? folge.filter((x) => x !== b) : [...folge, b];
-      zeigen();
-    });
-    return knopf;
-  });
-  function zeigen() {
-    knoepfe.forEach((k, i) => {
-      const platz = folge.indexOf(brueche[i]) + 1;
-      if (platz) k.dataset.platz = platz; else delete k.dataset.platz;
-      k.setAttribute("aria-label", kurz(brueche[i]) + (platz ? `, Platz ${platz}` : ", noch nicht gewählt"));
-    });
-  }
-  zeigen();
+  // Die Aufgabe darf nicht schon gelöst sein.
+  while (brueche.every((b, i) => b === sortiert[i])) brueche = mischen(brueche);
+  const karten = ziehKarten(brueche.map(bruchVon));
+  const nummern = sortiert.map((b) => brueche.indexOf(b));
   return {
     schluessel: brueche.map(kurz).sort().join(),
     inhalt: [
-      absatz("Tippe die Brüche der Größe nach an. Beginne mit dem ", el("strong", {}, "kleinsten"), ". Noch einmal antippen nimmt einen Bruch zurück."),
-      el("div", { class: "auswahl brueche" }, ...knoepfe)
+      absatz("Ziehe die Karten in die richtige Reihenfolge. Der ", el("strong", {}, "kleinste"), " Bruch kommt nach links. Du kannst auch zwei Karten nacheinander antippen, um sie zu tauschen."),
+      karten.element
     ],
     pruefe() {
-      if (folge.length < brueche.length) return { art: "offen", text: "Tippe alle Brüche an." };
-      if (folge.every((b, i) => b === sortiert[i])) return { art: "richtig", text: "Richtig!" };
-      if (folge.every((b, i) => b === sortiert[sortiert.length - 1 - i])) {
-        return { art: "falsch", text: "Du hast mit dem größten Bruch begonnen. Gesucht ist die Reihenfolge vom kleinsten zum größten." };
+      const folge = karten.folge();
+      if (folge.every((k, i) => k === nummern[i])) return { art: "richtig", text: "Richtig!" };
+      if (folge.every((k, i) => k === nummern[nummern.length - 1 - i])) {
+        return { art: "falsch", text: "Das ist genau umgekehrt. Der kleinste Bruch liegt links." };
       }
       return { art: "falsch", text: stufe === 1
         ? "Haben die Brüche den gleichen Nenner oder den gleichen Zähler? Überlege, was das bedeutet."
         : "Erweitere alle Brüche auf denselben Nenner." };
     },
     loese() {
-      folge = [...sortiert];
-      zeigen();
+      karten.setzen(nummern);
       return sortiert.flatMap((b, i) => [i ? " < " : "", bruchVon(b)]);
     }
   };
