@@ -1,0 +1,191 @@
+/* Farben zentral ändern */
+:root {
+  --grund: #f5f6f8;
+  --flaeche: #ffffff;
+  --schrift: #1f2933;
+  --leise: #55616d;
+  --linie: #d3d9df;
+  --akzent: #2a5f8f;
+  --akzent-hell: #e6eff7;
+  --farbe-teil: #7fb0d8;
+  --gut: #1e6b3c;
+  --gut-hell: #e5f4ea;
+  --achtung: #96470a;
+  --achtung-hell: #fdf0e3;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: 112.5%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--grund);
+  color: var(--schrift);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+main { width: 100%; flex: 1 0 auto; }
+main, footer nav, #pfad ol { max-width: 60rem; margin-inline: auto; padding-inline: 1.25rem; }
+main { padding-block: 1.5rem 4rem; }
+h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.2; margin: 0 0 .5rem; }
+h2 { font-size: 1.4rem; line-height: 1.3; margin: 2.5rem 0 .75rem; }
+h3 { font-size: 1.1rem; margin: 0 0 .5rem; }
+p { margin: 0 0 1rem; }
+.einleitung { color: var(--leise); }
+a:focus-visible, button:focus-visible, input:focus-visible, .feld:focus-visible {
+  outline: 3px solid var(--akzent); outline-offset: 2px;
+}
+
+/* Pfadanzeige */
+#pfad {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--flaeche); border-bottom: 1px solid var(--linie);
+}
+#pfad ol { list-style: none; margin-block: 0; padding-block: .15rem; display: flex; flex-wrap: wrap; }
+#pfad li { display: flex; align-items: center; }
+#pfad li + li::before { content: "›"; color: var(--leise); padding-inline: .5rem; }
+#pfad a { display: flex; align-items: center; min-height: 44px; min-width: 44px; color: var(--akzent); }
+#pfad a[aria-current] { color: var(--schrift); font-weight: 600; text-decoration: none; }
+section { scroll-margin-top: 4rem; }
+
+/* Kacheln */
+#kacheln {
+  display: grid; gap: 1.25rem; margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.kachel {
+  display: flex; flex-direction: column; justify-content: center; gap: .25rem;
+  min-height: 9rem; padding: 1.25rem;
+  background: var(--flaeche); color: inherit; text-decoration: none;
+  border: 1px solid var(--linie); border-radius: 12px;
+}
+.kachel:hover, .kachel:active { border-color: var(--akzent); background: var(--akzent-hell); }
+.kachel-titel { font-size: 1.3rem; font-weight: 600; line-height: 1.25; color: var(--akzent); }
+.kachel-text { color: var(--leise); }
+
+/* Erklärungen */
+.karte {
+  background: var(--flaeche); border: 1px solid var(--linie); border-radius: 12px;
+  padding: 1.25rem; margin-bottom: 1.25rem;
+}
+.karte > :last-child { margin-bottom: 0; }
+.merke { background: var(--akzent-hell); border-color: var(--akzent); }
+.abstand { margin-top: 1.25rem; }
+.beispiele { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.beispiele .karte { margin: 0; }
+.mit-bild { display: grid; gap: 1.25rem; align-items: center; }
+@media (min-width: 40rem) { .mit-bild { grid-template-columns: 1fr 15rem; } }
+.inhalt-links { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+
+/* Zeichnungen */
+.figur { display: block; width: 100%; max-width: 15rem; max-height: 13rem; margin: .5rem auto 1rem; }
+.feld { fill: #fff; stroke: var(--schrift); stroke-width: 2; }
+.feld.gefaerbt { fill: var(--farbe-teil); }
+.figur text { font: 16px system-ui, sans-serif; fill: var(--schrift); }
+.antippbar { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+fieldset:disabled .antippbar { cursor: default; }
+.gross { max-width: 22rem; max-height: 20rem; }
+
+/* Brüche */
+.bruch {
+  display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; line-height: 1.15; margin-inline: .15em; font-weight: 600; white-space: nowrap;
+}
+.bruch > span { padding-inline: .25em; }
+.bruch > span:first-child { border-bottom: 2px solid currentColor; }
+.bruch.riesig { font-size: 2.4rem; }
+.bruch-teile { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
+.bruch-teile ul { margin: 0; padding-left: 1.2rem; flex: 1 1 15rem; }
+
+/* Übungen */
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.bruch-eingabe { display: inline-flex; flex-direction: column; align-items: center; gap: .4rem; margin: .25rem 0 1rem; }
+.bruch-eingabe .strich { width: 100%; height: 3px; background: var(--schrift); }
+.bruch-eingabe input {
+  width: 5rem; height: 52px; text-align: center; font: inherit; font-size: 1.3rem;
+  color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
+}
+input:disabled { opacity: 1; background: var(--grund); }
+.auswahl { display: grid; gap: .75rem; grid-template-columns: repeat(2, 1fr); margin-bottom: 1rem; }
+@media (min-width: 40rem) { .auswahl { grid-template-columns: repeat(3, 1fr); } }
+.auswahl button {
+  position: relative; height: 9.5rem; padding: .75rem; background: #fff; cursor: pointer;
+  border: 2px solid var(--linie); border-radius: 12px; touch-action: manipulation;
+}
+.auswahl .figur { margin: 0 auto; max-height: 100%; height: 100%; }
+.auswahl button[aria-pressed="true"] { border-color: var(--akzent); background: var(--akzent-hell); box-shadow: 0 0 0 2px var(--akzent); }
+.auswahl button[aria-pressed="true"]::after {
+  content: "✓"; position: absolute; top: 6px; right: 6px; width: 28px; height: 28px;
+  border-radius: 50%; background: var(--akzent); color: #fff; font: 600 18px/28px system-ui, sans-serif;
+}
+.auswahl.brueche button, .auswahl.rechnungen button { height: auto; min-height: 5.5rem; font: inherit; font-size: 1.25rem; color: inherit; }
+.auswahl.rechnungen { grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .auswahl.rechnungen { grid-template-columns: 1fr 1fr; } }
+.fest { min-width: 5rem; line-height: 52px; text-align: center; font-size: 1.3rem; font-weight: 600; }
+.gleichung { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; font-size: 1.3rem; margin-bottom: 1rem; }
+.gleichung .bruch-eingabe { margin: 0; font-size: 1rem; }
+.zahl-eingabe { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+.zahl-eingabe input {
+  width: 5rem; height: 52px; text-align: center; font: inherit; font-size: 1.3rem;
+  color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
+}
+.vergleich { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.art { flex-wrap: wrap; }
+.vergleichszeile { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; font-size: 1.3rem; padding-block: .5rem; }
+.vergleichszeile > .bruch { min-width: 2.5rem; align-items: center; }
+.vergleichszeile .bruch-eingabe { margin: 0; font-size: 1rem; }
+.vergleichszeile .art button { min-width: 48px; min-height: 48px; padding-inline: .5rem; font-size: 1.25rem; }
+.zeilen { margin-bottom: 1rem; }
+.bild-vergleich { display: grid; grid-template-columns: 1fr auto 1fr; gap: .5rem 1rem; align-items: center; justify-items: center; }
+.bild-vergleich > .figur:first-child { grid-column: 1; }
+.bild-vergleich > .figur + .figur { grid-column: 3; }
+.bild-vergleich .figur { max-width: 20rem; margin-block: .5rem; }
+.bild-vergleich .wahl-liste { margin-bottom: 1rem; }
+/* Schrift mindestens 16px, sonst zoomt Safari auf dem iPad beim Antippen */
+.wahl-liste {
+  -webkit-appearance: none; appearance: none;
+  width: 4rem; height: 56px; padding: 0; border-radius: 8px;
+  border: 2px solid var(--akzent); background: #fff; color: var(--akzent);
+  font: inherit; font-size: 1.5rem; font-weight: 600;
+  text-align: center; text-align-last: center; touch-action: manipulation;
+}
+.wahl-liste:focus-visible { outline: 3px solid var(--akzent); outline-offset: 2px; }
+.wahl-liste:disabled { opacity: 1; background: var(--grund); }
+.auswahl button[data-platz] { border-color: var(--akzent); background: var(--akzent-hell); }
+.auswahl button[data-platz]::after {
+  content: attr(data-platz); position: absolute; top: 6px; right: 6px; width: 30px; height: 30px;
+  border-radius: 50%; background: var(--akzent); color: #fff; font: 600 17px/30px system-ui, sans-serif;
+}
+.bild-bruch { display: flex; flex-direction: column; align-items: center; }
+.bild-bruch > .bruch { font-size: 1.6rem; margin-top: 1.25rem; }
+.stufen { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.stufen button, .art button {
+  min-height: 44px; padding: .25rem 1rem; font: inherit; cursor: pointer; touch-action: manipulation;
+  color: var(--akzent); background: #fff; border: 1px solid var(--linie); border-radius: 8px;
+}
+.stufen button[aria-pressed="true"], .art button[aria-pressed="true"] {
+  background: var(--akzent-hell); border-color: var(--akzent); font-weight: 600;
+}
+.art { display: flex; gap: .5rem; }
+.meldung:not(:empty) { padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 5px solid; }
+.meldung.richtig { background: var(--gut-hell); color: var(--gut); }
+.meldung.falsch, .meldung.offen { background: var(--achtung-hell); color: var(--achtung); }
+.meldung.loesung { background: var(--akzent-hell); color: var(--akzent); }
+.knoepfe { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+.knopf {
+  display: inline-flex; align-items: center; min-height: 48px; padding: .4rem 1.25rem;
+  font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
+  color: var(--akzent); background: #fff; border: 2px solid var(--akzent); border-radius: 8px;
+  touch-action: manipulation;
+}
+.knopf.haupt { color: #fff; background: var(--akzent); }
+.stand { color: var(--leise); margin-left: auto; }
+
+/* Fußzeile */
+footer { background: var(--flaeche); border-top: 1px solid var(--linie); padding-bottom: env(safe-area-inset-bottom, 0px); }
+footer nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 2rem; padding-block: .25rem; }
+footer a { display: flex; align-items: center; min-height: 44px; color: var(--leise); }
+.rechtstext { overflow-wrap: anywhere; }
+.platzhalter { background: #fff3b0; padding-inline: .2em; }
+
+@media print { #pfad, footer, .knoepfe { display: none; } body { background: #fff; } }

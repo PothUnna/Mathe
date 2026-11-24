@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Anteile als Brüche darstellen – Klasse 6</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script src="../../../js/struktur.js" defer></script>
+  <script src="../../../js/script.js" defer></script>
+  <script src="uebungen.js" defer></script>
+</head>
+<body data-pfad="klasse-6/brueche/anteile-als-brueche">
+  <nav id="pfad" aria-label="Pfad"></nav>
+  <main>
+    <h1>Anteile als Brüche darstellen</h1>
+    <p class="einleitung">Hier lernst du, wie man einen Teil von einem Ganzen als Bruch schreibt.</p>
+    <div class="inhalt-links">
+      <a class="knopf" href="#erklaerung">Erklärung</a>
+      <a class="knopf" href="#beispiele">Beispiele</a>
+      <a class="knopf" href="#uebungen">Übungen</a>
+    </div>
+
+    <section id="erklaerung">
+      <h2>Was ist ein Anteil?</h2>
+      <div class="karte mit-bild">
+        <div>
+          <p>Eine Pizza wird in <strong>4 gleich große</strong> Stücke geschnitten. <strong>3 Stücke</strong> sind noch da. Sie sind im Bild blau gefärbt.</p>
+          <p>Die ganze Pizza nennt man <strong>das Ganze</strong>. Die 3 Stücke sind ein <strong>Anteil</strong> davon. Diesen Anteil schreibt man als Bruch: <span class="bruch" role="img" aria-label="3 durch 4"><span>3</span><span>4</span></span> (gesprochen: drei Viertel).</p>
+        </div>
+          <svg class="figur" viewBox="0 0 200 200" role="img" aria-label="Kreis aus 4 gleich großen Teilen, 3 sind gefärbt">
+            <path class="feld gefaerbt" d="M100 100 V5 A95 95 0 0 1 195 100 Z"/>
+            <path class="feld gefaerbt" d="M100 100 H195 A95 95 0 0 1 100 195 Z"/>
+            <path class="feld gefaerbt" d="M100 100 V195 A95 95 0 0 1 5 100 Z"/>
+            <path class="feld" d="M100 100 H5 A95 95 0 0 1 100 5 Z"/>
+          </svg>
+      </div>
+
+      <h2>So ist ein Bruch aufgebaut</h2>
+      <div class="karte">
+        <div class="bruch-teile">
+          <span class="bruch riesig" role="img" aria-label="3 durch 4"><span>3</span><span>4</span></span>
+          <ul>
+            <li>Der <strong>Zähler</strong> steht oben: Wie viele Teile werden betrachtet?</li>
+            <li>Der <strong>Bruchstrich</strong> trennt Zähler und Nenner.</li>
+            <li>Der <strong>Nenner</strong> steht unten: In wie viele gleich große Teile ist das Ganze zerlegt?</li>
+          </ul>
+        </div>
+      </div>
+      <div class="karte merke">
+        <h3>Merke: So findest du den Bruch</h3>
+        <ol>
+          <li>Prüfe, ob alle Teile gleich groß sind.</li>
+          <li>Zähle <strong>alle</strong> Teile. Das ist der Nenner.</li>
+          <li>Zähle die <strong>betrachteten</strong> Teile. Das ist der Zähler.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="beispiele">
+      <h2>Beispiele</h2>
+      <div class="beispiele">
+        <div class="karte">
+          <h3>Rechteck</h3>
+          <svg class="figur" viewBox="0 0 300 180" role="img" aria-label="Rechteck aus 6 gleich großen Teilen, 5 sind gefärbt">
+            <rect class="feld gefaerbt" x="5" y="5" width="96" height="85"/>
+            <rect class="feld gefaerbt" x="101" y="5" width="96" height="85"/>
+            <rect class="feld gefaerbt" x="197" y="5" width="96" height="85"/>
+            <rect class="feld gefaerbt" x="5" y="90" width="96" height="85"/>
+            <rect class="feld gefaerbt" x="101" y="90" width="96" height="85"/>
+            <rect class="feld" x="197" y="90" width="96" height="85"/>
+          </svg>
+          <p>5 von 6 gleich großen Teilen sind gefärbt. Der Anteil ist <span class="bruch" role="img" aria-label="5 durch 6"><span>5</span><span>6</span></span>.</p>
+        </div>
+        <div class="karte">
+          <h3>Strecke</h3>
+          <svg class="figur" viewBox="0 0 300 90" role="img" aria-label="Strecke aus 5 gleich langen Abschnitten, 2 sind hervorgehoben">
+            <path d="M10 40 H290" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 40 H122" stroke="var(--farbe-teil)" stroke-width="10"/>
+            <path d="M10 25 V55" stroke="currentColor" stroke-width="2"/>
+            <path d="M66 25 V55" stroke="currentColor" stroke-width="2"/>
+            <path d="M122 25 V55" stroke="currentColor" stroke-width="2"/>
+            <path d="M178 25 V55" stroke="currentColor" stroke-width="2"/>
+            <path d="M234 25 V55" stroke="currentColor" stroke-width="2"/>
+            <path d="M290 25 V55" stroke="currentColor" stroke-width="2"/>
+            <text x="10" y="78" text-anchor="middle">0</text>
+            <text x="290" y="78" text-anchor="middle">1</text>
+          </svg>
+          <p>2 von 5 gleich langen Abschnitten sind blau. Der Anteil ist <span class="bruch" role="img" aria-label="2 durch 5"><span>2</span><span>5</span></span>.</p>
+        </div>
+        <div class="karte">
+          <h3>Menge</h3>
+          <svg class="figur" viewBox="0 0 300 120" role="img" aria-label="8 Kugeln, 3 sind gefärbt">
+            <circle class="feld gefaerbt" cx="48" cy="32" r="22"/>
+            <circle class="feld gefaerbt" cx="116" cy="32" r="22"/>
+            <circle class="feld gefaerbt" cx="184" cy="32" r="22"/>
+            <circle class="feld" cx="252" cy="32" r="22"/>
+            <circle class="feld" cx="48" cy="88" r="22"/>
+            <circle class="feld" cx="116" cy="88" r="22"/>
+            <circle class="feld" cx="184" cy="88" r="22"/>
+            <circle class="feld" cx="252" cy="88" r="22"/>
+          </svg>
+          <p>3 von 8 Kugeln sind blau. Das Ganze sind hier alle 8 Kugeln. Der Anteil ist <span class="bruch" role="img" aria-label="3 durch 8"><span>3</span><span>8</span></span>.</p>
+        </div>
+      </div>
+
+      <h2>Achtung: Typischer Fehler</h2>
+      <div class="karte">
+        <p>Hier ist 1 von 3 Teilen gefärbt. Trotzdem ist der Anteil <strong>nicht</strong> <span class="bruch" role="img" aria-label="1 durch 3"><span>1</span><span>3</span></span>, denn die Teile sind nicht gleich groß.</p>
+          <svg class="figur" viewBox="0 0 300 100" role="img" aria-label="Streifen aus 3 verschieden breiten Teilen, der breite ist gefärbt">
+            <rect class="feld gefaerbt" x="5" y="5" width="174" height="90"/>
+            <rect class="feld" x="179" y="5" width="58" height="90"/>
+            <rect class="feld" x="237" y="5" width="58" height="90"/>
+          </svg>
+        <p>Zerlege das Ganze in gleich große Teile. Jetzt siehst du: Der Anteil ist <span class="bruch" role="img" aria-label="3 durch 5"><span>3</span><span>5</span></span>.</p>
+          <svg class="figur" viewBox="0 0 300 100" role="img" aria-label="Derselbe Streifen in 5 gleich breiten Teilen, 3 sind gefärbt">
+            <rect class="feld gefaerbt" x="5" y="5" width="58" height="90"/>
+            <rect class="feld gefaerbt" x="63" y="5" width="58" height="90"/>
+            <rect class="feld gefaerbt" x="121" y="5" width="58" height="90"/>
+            <rect class="feld" x="179" y="5" width="58" height="90"/>
+            <rect class="feld" x="237" y="5" width="58" height="90"/>
+          </svg>
+      </div>
+    </section>
+
+    <section id="uebungen">
+      <h2>Übungen</h2>
+      <p>Du kannst jede Übung beliebig oft mit neuen Aufgaben wiederholen.</p>
+      <div class="karte">
+        <h3>Übung 1: Bruch ablesen</h3>
+        <div id="ablesen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 2: Anteil färben</h3>
+        <div id="faerben"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 3: Bilder auswählen</h3>
+        <div id="auswaehlen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 4: Anteile im Alltag</h3>
+        <div id="alltag"></div>
+      </div>
+    </section>
+    <noscript><p>Bitte aktiviere JavaScript, damit Navigation und Übungen funktionieren.</p></noscript>
+  </main>
+</body>
+</html>
