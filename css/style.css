@@ -260,6 +260,50 @@ fieldset:disabled .zieh-reihe button { cursor: default; }
   .vergleichszeile .art { gap: .25rem; flex-wrap: nowrap; }
 }
 
+/* Koordinatensystem */
+.koordinaten { display: block; width: 100%; max-width: 30rem; margin: .25rem auto 1rem; overflow: visible; }
+.koordinaten path { fill: none; stroke: var(--schrift); stroke-width: 2; }
+.koordinaten .gitter { stroke: var(--linie); stroke-width: 1; }
+.koordinaten text { font: 15px system-ui, sans-serif; text-anchor: middle; fill: var(--schrift); }
+.koordinaten .zahl-y { text-anchor: end; }
+.koordinaten .achsenname { font-style: italic; font-size: 18px; }
+.koordinaten .gerade path { stroke-width: 3.5; stroke-linecap: round; }
+.koordinaten .gerade text { font-size: 20px; font-weight: 700; }
+.koordinaten .g1 path { stroke: var(--akzent); } .koordinaten .g1 text { fill: var(--akzent); }
+.koordinaten .g2 path { stroke: var(--achtung); } .koordinaten .g2 text { fill: var(--achtung); }
+.koordinaten .g3 path { stroke: var(--gut); } .koordinaten .g3 text { fill: var(--gut); }
+.koordinaten .dreieck path { stroke: var(--achtung); stroke-width: 3; }
+.koordinaten .dreieck text { fill: var(--achtung); font-weight: 700; font-size: 17px; paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+.koordinaten .dreieck .seite { text-anchor: start; }
+.koordinaten .punkt { fill: var(--akzent); stroke: #fff; stroke-width: 2; }
+.koordinaten .fest .punkt { fill: var(--schrift); }
+.koordinaten .griff { fill: transparent; cursor: grab; touch-action: none; }
+.koordinaten .fest .griff { cursor: default; }
+.koordinaten .marke { fill: none; stroke: var(--achtung); stroke-width: 3; }
+.zeichnen { cursor: crosshair; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.zeichnen:focus-visible { outline: 3px solid var(--akzent); }
+fieldset:disabled .zeichnen, fieldset:disabled .griff { cursor: default; }
+.mit-graph { display: grid; gap: 1.25rem; align-items: center; }
+@media (min-width: 40rem) { .mit-graph { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } }
+.term { white-space: nowrap; font-weight: 600; }
+.term-gross { font-size: 1.4rem; text-align: center; }
+.rat { white-space: nowrap; }
+.term-eingabe, .werte { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: 1.3rem; margin-bottom: 1rem; }
+.werte { column-gap: 2.5rem; }
+.werte label, .werte > span { display: inline-flex; align-items: center; gap: .6rem; }
+.rat-eingabe .bruch-eingabe { margin: 0; }
+.rat-eingabe input, .term-feld {
+  width: 5rem; height: 52px; text-align: center; font: inherit; font-size: 1.3rem;
+  color: inherit; background: #fff; border: 2px solid var(--leise); border-radius: 8px;
+}
+.term-feld { width: 14rem; max-width: 100%; }
+.auswahl.aussagen { grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .auswahl.aussagen { grid-template-columns: 1fr 1fr; } }
+.auswahl.aussagen button { height: auto; min-height: 4rem; padding-right: 2.5rem; font: inherit; color: inherit; text-align: left; }
+.regler { display: grid; grid-template-columns: auto 1fr auto; gap: .5rem 1rem; align-items: center; margin-bottom: 1rem; }
+.regler input { width: 100%; height: 44px; accent-color: var(--akzent); }
+.regler output { min-width: 3rem; font-weight: 600; text-align: right; }
+
 /* Fußzeile */
 footer { background: var(--flaeche); border-top: 1px solid var(--linie); padding-bottom: env(safe-area-inset-bottom, 0px); }
 footer nav { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 2rem; padding-block: .25rem; }

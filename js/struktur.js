@@ -54,6 +54,25 @@ const STRUKTUR = {
         }
       ]
     },
+    {
+      ordner: "klasse-8",
+      titel: "Klasse 8",
+      text: "Lineare Funktionen",
+      kinder: [
+        {
+          ordner: "lineare-funktionen",
+          titel: "Lineare Funktionen",
+          text: "Graphen zeichnen und Terme ablesen",
+          kinder: [
+            {
+              ordner: "steigung-und-achsenabschnitt",
+              titel: "Steigung und y-Achsenabschnitt",
+              text: "Erklärung, Beispiele und Übungen"
+            }
+          ]
+        }
+      ]
+    },
     { ordner: "impressum", titel: "Impressum", fusszeile: true },
     { ordner: "datenschutz", titel: "Datenschutz", fusszeile: true }
   ]

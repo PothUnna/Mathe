@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Steigung und y-Achsenabschnitt – Klasse 8</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <script src="../../../js/struktur.js" defer></script>
+  <script src="../../../js/script.js" defer></script>
+  <script src="../../../js/koordinaten.js" defer></script>
+  <script src="uebungen.js" defer></script>
+</head>
+<body data-pfad="klasse-8/lineare-funktionen/steigung-und-achsenabschnitt">
+  <nav id="pfad" aria-label="Pfad"></nav>
+  <main>
+    <h1>Steigung und y-Achsenabschnitt</h1>
+    <p class="einleitung">Hier lernst du, wie man Graphen zu <span class="term">f(x) = mx + b</span> zeichnet und den Term am Graphen abliest.</p>
+    <div class="inhalt-links">
+      <a class="knopf" href="#erklaerung">Erklärung</a>
+      <a class="knopf" href="#beispiele">Beispiele</a>
+      <a class="knopf" href="#uebungen">Übungen</a>
+    </div>
+
+    <section id="erklaerung">
+      <h2>Was ist eine lineare Funktion?</h2>
+      <div class="karte">
+        <p>Eine lineare Funktion hat die Form <span class="term">f(x) = mx + b</span>. Ihr Graph ist eine <strong>Gerade</strong>.</p>
+        <ul>
+          <li><strong>m</strong> ist die <strong>Steigung</strong>. Sie gibt an, wie steil die Gerade ist.</li>
+          <li><strong>b</strong> ist der <strong>y-Achsenabschnitt</strong>. Er gibt an, wo die Gerade die y-Achse schneidet.</li>
+        </ul>
+      </div>
+      <h2>Probiere es aus</h2>
+      <div class="karte">
+        <p>Verschiebe die Regler. Was passiert mit der Geraden, wenn du nur m veränderst? Was passiert bei b?</p>
+        <div id="ausprobieren"></div>
+      </div>
+      <h2>Der y-Achsenabschnitt b</h2>
+        <div class="karte mit-graph">
+          <div>
+          <p>Die Gerade schneidet die y-Achse im Punkt (0 | b). Denn f(0) = m · 0 + b = b.</p>
+          <p>Diese Gerade schneidet die y-Achse bei 2. Also ist <strong>b = 2</strong>.</p>
+          </div>
+          <div class="graph" data-m="1/2" data-b="2" data-punkt="0,2"></div>
+        </div>
+      <h2>Die Steigung m und das Steigungsdreieck</h2>
+        <div class="karte mit-graph">
+          <div>
+          <p>Gehe von einem Punkt der Geraden nach <strong>rechts</strong> und dann nach <strong>oben oder unten</strong>, bis du wieder auf der Geraden bist. So entsteht ein <strong>Steigungsdreieck</strong>.</p>
+          <p>Hier: 3 nach rechts, 2 nach oben.</p>
+          <p class="gleichung">m <span>=</span> <span class="bruch"><span>nach oben</span><span>nach rechts</span></span> <span>=</span> <span class="bruch" role="img" aria-label="2 durch 3"><span>2</span><span>3</span></span></p>
+          <p>Geht es nach <strong>unten</strong>, ist die Zahl oben negativ. Wie groß du das Dreieck zeichnest, ist egal: m bleibt gleich.</p>
+          </div>
+          <div class="graph" data-m="2/3" data-b="-1" data-dreieck="0,3" data-punkt="0,-1"></div>
+        </div>
+      <h2>Steigt oder fällt die Gerade?</h2>
+      <div class="beispiele">
+        <div class="karte">
+          <h3>m > 0: Die Gerade steigt</h3>
+          <div class="graph" data-m="2" data-b="-1" data-max="4" data-dreieck="0,1"></div>
+          <p><span class="term">f(x) = 2x − 1</span></p>
+        </div>
+        <div class="karte">
+          <h3>m &lt; 0: Die Gerade fällt</h3>
+          <div class="graph" data-m="-2" data-b="1" data-max="4" data-dreieck="0,1"></div>
+          <p><span class="term">f(x) = −2x + 1</span></p>
+        </div>
+        <div class="karte">
+          <h3>m = 0: parallel zur x-Achse</h3>
+          <div class="graph" data-m="0" data-b="3" data-max="4"></div>
+          <p><span class="term">f(x) = 3</span></p>
+        </div>
+      </div>
+      <div class="karte merke abstand">
+        <h3>Merke</h3>
+        <ul>
+          <li><strong>b</strong> liest du dort ab, wo die Gerade die <strong>y-Achse</strong> schneidet.</li>
+          <li><strong>m</strong> bestimmst du mit einem <strong>Steigungsdreieck</strong>: Schritte nach oben (oder unten) geteilt durch Schritte nach rechts.</li>
+          <li>Steht vor dem x keine Zahl, ist m = 1 oder bei −x ist m = −1.</li>
+          <li>Fehlt die Zahl ohne x, ist b = 0. Die Gerade geht dann durch den Ursprung.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="beispiele">
+      <h2>Beispiel: Graph zeichnen</h2>
+        <div class="karte mit-graph">
+          <div>
+          <p>Zeichne den Graphen zu <span class="term">f(x) = <span class="bruch" role="img" aria-label="3 durch 2"><span>3</span><span>2</span></span>x − 2</span>.</p>
+          <ol>
+            <li>b = −2: Markiere den Punkt <strong>(0 | −2)</strong> auf der y-Achse.</li>
+            <li>m = <span class="bruch" role="img" aria-label="3 durch 2"><span>3</span><span>2</span></span>: Gehe von dort <strong>2 nach rechts</strong> (Nenner) und <strong>3 nach oben</strong> (Zähler). Das ist der zweite Punkt (2 | 1).</li>
+            <li>Zeichne die <strong>Gerade</strong> durch beide Punkte.</li>
+          </ol>
+          </div>
+          <div class="graph" data-m="3/2" data-b="-2" data-dreieck="0,2" data-punkt="0,-2"></div>
+        </div>
+      <h2>Beispiel: Term ablesen</h2>
+        <div class="karte mit-graph">
+          <div>
+          <ol>
+            <li>Die Gerade schneidet die y-Achse bei 3: <strong>b = 3</strong>.</li>
+            <li>Suche einen weiteren Punkt genau auf dem Gitter und zeichne ein Steigungsdreieck: 1 nach rechts, 2 nach unten. Also ist <strong>m = −2</strong>.</li>
+            <li>Setze ein: <span class="term">f(x) = −2x + 3</span></li>
+          </ol>
+          </div>
+          <div class="graph" data-m="-2" data-b="3" data-dreieck="0,1" data-punkt="0,3"></div>
+        </div>
+      <h2>Achtung: Typische Fehler</h2>
+      <div class="beispiele">
+        <div class="karte">
+          <h3>Zähler und Nenner vertauscht</h3>
+          <p>Bei m = <span class="bruch" role="img" aria-label="2 durch 3"><span>2</span><span>3</span></span> geht es <strong>3</strong> nach rechts und <strong>2</strong> nach oben, nicht umgekehrt. Der Nenner geht nach rechts.</p>
+        </div>
+        <div class="karte">
+          <h3>Das Minus vergessen</h3>
+          <p>Fällt die Gerade von links nach rechts, ist m <strong>negativ</strong>. Prüfe das immer am Schluss.</p>
+        </div>
+        <div class="karte">
+          <h3>Falsche Achse</h3>
+          <p>b liest du an der <strong>y-Achse</strong> ab, nicht dort, wo die Gerade die x-Achse schneidet.</p>
+        </div>
+        <div class="karte">
+          <h3>Reihenfolge im Term</h3>
+          <p>Bei <span class="term">f(x) = 3 − 2x</span> ist <strong>m = −2</strong> und b = 3. Die Steigung ist immer die Zahl <strong>vor dem x</strong>, mit Vorzeichen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="uebungen">
+      <h2>Übungen</h2>
+      <p>Nach drei richtigen Lösungen kommst du in die nächste Stufe. Gibt es mehr als zwei Stufen, kannst du sie auch selbst wählen. Ein Minuszeichen tippst du mit ein.</p>
+      <div class="karte">
+        <h3>Übung 1: m und b am Graphen bestimmen</h3>
+        <div id="bestimmen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 2: Graphen zeichnen</h3>
+        <div id="zeichnen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 3: Term am Graphen ablesen</h3>
+        <div id="ablesen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 4: Graphen und Terme zuordnen</h3>
+        <div id="zuordnen"></div>
+      </div>
+      <div class="karte">
+        <h3>Übung 5: Aussagen prüfen</h3>
+        <div id="aussagen"></div>
+      </div>
+    </section>
+    <noscript><p>Bitte aktiviere JavaScript, damit Navigation und Übungen funktionieren.</p></noscript>
+  </main>
+</body>
+</html>
